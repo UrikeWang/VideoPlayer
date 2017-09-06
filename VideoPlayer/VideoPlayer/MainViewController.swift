@@ -13,7 +13,6 @@ import AVKit
 
 class MainViewController: UIViewController {
 
-    var url: String = ""
     var composition: AVMutableComposition?
     var compositionVideoTrack: AVMutableCompositionTrack?
     var compositionAudioTrack: AVMutableCompositionTrack?
@@ -30,8 +29,6 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
 
         self.urlsearchBar.delegate = self
-
-        let videoUrl = URL(string: "\(urlsearchBar.text)")
 
         self.urlsearchBar.addObserver(
             self,
@@ -61,16 +58,21 @@ class MainViewController: UIViewController {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
 
         if context == &myContext {
+
             if let newValue = change?[NSKeyValueChangeKey.newKey], keyPath == "status" {
+
                 print("kvo status \(newValue)")
+
             } else if let newValue = change?[NSKeyValueChangeKey.newKey], keyPath == "rate" {
 
                 guard
                     let rate: Float = CFloat((newValue as? NSNumber)!)
                     else { return }
+
                 print("kvo rate \(rate)")
 
             }
+
         } else {
 
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
@@ -98,11 +100,15 @@ class MainViewController: UIViewController {
 
         self.playerController?.player = self.player
 
-        self.playerController?.view.frame = CGRect(x: 0, y: 80, width: view.frame.width, height: 100.0)
-        
-//        self.playerController?.preferredContentSize = CGRect(x: 0, y: 80, width: view.frame.width, height: 100.0)
+        self.playerController?.view.frame = CGRect(x: 0, y: 80, width: view.frame.width, height: view.frame.height * 0.7)
 
-        self.present(self.playerController!, animated: true, completion: nil)
+        self.playerController?.view.backgroundColor = .clear
+
+        self.addChildViewController(playerController!)
+
+        self.view.addSubview((playerController?.view)!)
+
+        playerController?.didMove(toParentViewController: self)
 
         self.timer = Timer.scheduledTimer(
             timeInterval: 1.0,
