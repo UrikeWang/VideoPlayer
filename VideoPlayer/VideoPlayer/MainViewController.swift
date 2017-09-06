@@ -64,7 +64,7 @@ class MainViewController: UIViewController, UISearchBarDelegate {
             } else if let newValue = change?[NSKeyValueChangeKey.newKey], keyPath == "rate" {
 
                 guard
-                    let rate: Float = CFloat((newValue as? NSNumber)!)
+                    let rate: Float = newValue as? CFloat
                     else { return }
 
                 print("kvo rate \(rate)")
@@ -171,11 +171,11 @@ class MainViewController: UIViewController, UISearchBarDelegate {
 
     }
 
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-
-        setAVPlayerController()
-
-    }
+//    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+//
+//        setAVPlayerController()
+//
+//    }
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
 
@@ -206,6 +206,8 @@ class MainViewController: UIViewController, UISearchBarDelegate {
         self.playerController?.view.frame = CGRect(x: 0, y: 80, width: view.frame.width, height: view.frame.height * 0.7)
 
         self.playerController?.view.backgroundColor = .clear
+
+        self.playerController?.showsPlaybackControls = false
 
         self.addChildViewController(playerController!)
 
