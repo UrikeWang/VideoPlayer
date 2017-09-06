@@ -184,6 +184,8 @@ class MainViewController: UIViewController, UISearchBarDelegate {
 
         searchBar.placeholder = "Enter URL of video"
 
+        searchBar.barTintColor = UIColor(red: 8.0/255.0, green: 21.0/255.0, blue: 35.0/255.0, alpha: 1)
+
         searchBar.translatesAutoresizingMaskIntoConstraints = false
 
         return searchBar
