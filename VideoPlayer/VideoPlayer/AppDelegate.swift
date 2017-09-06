@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController?.view.backgroundColor = UIColor(red: 8.0/255.0, green: 21.0/255.0, blue: 35.0/255.0, alpha: 1)
 
         window?.makeKeyAndVisible()
-        
+
         UIApplication.shared.statusBarStyle = .lightContent
 
         return true

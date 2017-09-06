@@ -39,7 +39,7 @@ class MainViewController: UIViewController, UISearchBarDelegate {
 
         playButton.addTarget(self, action: #selector(playVideo), for: .touchUpInside)
 
-        muteButton.addTarget(self, action: #selector(playVideo), for: .touchUpInside)
+        muteButton.addTarget(self, action: #selector(muteVideo), for: .touchUpInside)
 
         view.addSubview(urlsearchBar)
 
@@ -78,6 +78,12 @@ class MainViewController: UIViewController, UISearchBarDelegate {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
 
         }
+    }
+
+    func muteVideo() {
+
+        self.player?.isMuted = true
+
     }
 
     func playVideo() {
