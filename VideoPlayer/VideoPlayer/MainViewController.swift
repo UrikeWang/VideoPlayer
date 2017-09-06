@@ -11,7 +11,7 @@ import CoreMedia
 import MediaPlayer
 import AVKit
 
-class MainViewController: UIViewController {
+class MainViewController: UIViewController, UISearchBarDelegate {
 
     var composition: AVMutableComposition?
     var compositionVideoTrack: AVMutableCompositionTrack?
@@ -39,7 +39,7 @@ class MainViewController: UIViewController {
 
         playButton.addTarget(self, action: #selector(playVideo), for: .touchUpInside)
 
-        muteButton.addTarget(self, action: #selector(playVideo), for: .touchUpInside)
+        muteButton.addTarget(self, action: #selector(muteVideo), for: .touchUpInside)
 
         view.addSubview(urlsearchBar)
 
@@ -78,6 +78,12 @@ class MainViewController: UIViewController {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
 
         }
+    }
+
+    func muteVideo() {
+
+        self.player?.isMuted = true
+
     }
 
     func playVideo() {
@@ -184,6 +190,8 @@ class MainViewController: UIViewController {
 
         searchBar.placeholder = "Enter URL of video"
 
+        searchBar.barTintColor = UIColor(red: 8.0/255.0, green: 21.0/255.0, blue: 35.0/255.0, alpha: 1)
+
         searchBar.translatesAutoresizingMaskIntoConstraints = false
 
         return searchBar
@@ -254,14 +262,6 @@ class MainViewController: UIViewController {
         muteButton.widthAnchor.constraint(equalToConstant: view.frame.width / 2).isActive = true
 
         muteButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
-
-    }
-
-}
-
-extension MainViewController: UISearchBarDelegate {
-
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
 
     }
 
