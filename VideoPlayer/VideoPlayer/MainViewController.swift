@@ -11,7 +11,7 @@ import CoreMedia
 import MediaPlayer
 import AVKit
 
-class MainViewController: UIViewController {
+class MainViewController: UIViewController, UISearchBarDelegate {
 
     var composition: AVMutableComposition?
     var compositionVideoTrack: AVMutableCompositionTrack?
@@ -254,14 +254,6 @@ class MainViewController: UIViewController {
         muteButton.widthAnchor.constraint(equalToConstant: view.frame.width / 2).isActive = true
 
         muteButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
-
-    }
-
-}
-
-extension MainViewController: UISearchBarDelegate {
-
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
 
     }
 
