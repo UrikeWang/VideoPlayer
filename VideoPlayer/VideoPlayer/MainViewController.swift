@@ -42,16 +42,20 @@ class MainViewController: UIViewController, UISearchBarDelegate {
         muteButton.addTarget(self, action: #selector(muteVideo), for: .touchUpInside)
 
         view.addSubview(urlsearchBar)
+        
+        view.addSubview(bottomView)
 
-        view.addSubview(playButton)
+        bottomView.addSubview(playButton)
 
-        view.addSubview(muteButton)
-
+        bottomView.addSubview(muteButton)
+     
         setupUrlSearchBar()
 
         setupPlayButton()
 
         setupMuteButton()
+
+        setupBottomView()
 
     }
 
@@ -198,6 +202,18 @@ class MainViewController: UIViewController, UISearchBarDelegate {
 
     }()
 
+    let bottomView: UIView = {
+
+        let view = UIView()
+
+        view.backgroundColor = .black
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+
+        return view
+
+    }()
+
     let playButton: UIButton = {
 
         let button = UIButton()
@@ -234,11 +250,23 @@ class MainViewController: UIViewController, UISearchBarDelegate {
 
         urlsearchBar.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
 
-        urlsearchBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        urlsearchBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 22).isActive = true
 
         urlsearchBar.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
 
         urlsearchBar.heightAnchor.constraint(equalToConstant: 30).isActive = true
+    }
+
+    func setupBottomView() {
+
+        bottomView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+
+        bottomView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+
+        bottomView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+
+        bottomView.heightAnchor.constraint(equalToConstant: 44).isActive = true
+
     }
 
     func setupPlayButton() {
