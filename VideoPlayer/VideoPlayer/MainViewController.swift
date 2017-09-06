@@ -7,22 +7,16 @@
 //
 
 import UIKit
-import CoreMedia
-import MediaPlayer
 import AVKit
+import AVFoundation
 
 class MainViewController: UIViewController, UISearchBarDelegate {
-
-    var composition: AVMutableComposition?
-    var compositionVideoTrack: AVMutableCompositionTrack?
-    var compositionAudioTrack: AVMutableCompositionTrack?
 
     fileprivate var myContext = 0
 
     var playerItem: AVPlayerItem?
     var player: AVPlayer?
     var playerController: AVPlayerViewController?
-    var rateSet = false
     var timer: Timer? = Timer()
 
     override func viewDidLoad() {
@@ -43,15 +37,19 @@ class MainViewController: UIViewController, UISearchBarDelegate {
 
         view.addSubview(urlsearchBar)
 
-        view.addSubview(playButton)
+        view.addSubview(bottomView)
 
-        view.addSubview(muteButton)
+        bottomView.addSubview(playButton)
+
+        bottomView.addSubview(muteButton)
 
         setupUrlSearchBar()
 
         setupPlayButton()
 
         setupMuteButton()
+
+        setupBottomView()
 
     }
 
@@ -66,7 +64,7 @@ class MainViewController: UIViewController, UISearchBarDelegate {
             } else if let newValue = change?[NSKeyValueChangeKey.newKey], keyPath == "rate" {
 
                 guard
-                    let rate: Float = CFloat((newValue as? NSNumber)!)
+                    let rate: Float = newValue as? CFloat
                     else { return }
 
                 print("kvo rate \(rate)")
@@ -82,48 +80,37 @@ class MainViewController: UIViewController, UISearchBarDelegate {
 
     func muteVideo() {
 
-        self.player?.isMuted = true
+        if muteButton.titleLabel?.text == "Mute" {
+
+            player?.isMuted = true
+
+            muteButton.setTitle("Unmute", for: .normal)
+
+        } else {
+
+            player?.isMuted = false
+
+            muteButton.setTitle("Mute", for: .normal)
+
+        }
 
     }
 
     func playVideo() {
 
-        self.removeObserver()
+        if playButton.titleLabel?.text == "Pause" {
 
-        guard
-            let videoURL = URL(string: urlsearchBar.text!)
-            else { return }
+            player?.pause()
 
-        self.playerItem = AVPlayerItem(url: videoURL)
+            playButton.setTitle("Play", for: .normal)
 
-        self.player = AVPlayer(playerItem: self.playerItem)
+        } else {
 
-        self.player?.actionAtItemEnd = AVPlayerActionAtItemEnd.none
+            player?.play()
 
-        self.addObserver()
+            playButton.setTitle("Pause", for: .normal)
 
-        self.playerController = AVPlayerViewController()
-
-        self.playerController?.player = self.player
-
-        self.playerController?.view.frame = CGRect(x: 0, y: 80, width: view.frame.width, height: view.frame.height * 0.7)
-
-        self.playerController?.view.backgroundColor = .clear
-
-        self.addChildViewController(playerController!)
-
-        self.view.addSubview((playerController?.view)!)
-
-        playerController?.didMove(toParentViewController: self)
-
-        self.timer = Timer.scheduledTimer(
-            timeInterval: 1.0,
-            target: self,
-            selector: #selector(MainViewController.itemStatus),
-            userInfo: nil,
-            repeats: true
-        )
-
+        }
     }
 
     func addObserver() {
@@ -184,6 +171,64 @@ class MainViewController: UIViewController, UISearchBarDelegate {
 
     }
 
+//    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+//
+//        setAVPlayerController()
+//
+//    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+
+        setAVPlayerController()
+
+    }
+
+    func setAVPlayerController() {
+
+        self.removeObserver()
+
+        guard
+            let videoURL = URL(string: urlsearchBar.text!)
+            else { return }
+
+        self.playerItem = AVPlayerItem(url: videoURL)
+
+        self.player = AVPlayer(playerItem: self.playerItem)
+
+        self.player?.actionAtItemEnd = AVPlayerActionAtItemEnd.none
+
+        self.addObserver()
+
+        self.playerController = AVPlayerViewController()
+
+        self.playerController?.player = self.player
+
+        self.playerController?.view.frame = CGRect(x: 0, y: 80, width: view.frame.width, height: view.frame.height * 0.7)
+
+        self.playerController?.view.backgroundColor = .clear
+
+        self.playerController?.showsPlaybackControls = false
+
+        self.addChildViewController(playerController!)
+
+        self.view.addSubview((playerController?.view)!)
+
+        playerController?.didMove(toParentViewController: self)
+
+        self.timer = Timer.scheduledTimer(
+            timeInterval: 1.0,
+            target: self,
+            selector: #selector(MainViewController.itemStatus),
+            userInfo: nil,
+            repeats: true
+        )
+
+        self.player?.play()
+
+        playButton.setTitle("Pause", for: .normal)
+
+    }
+
     let urlsearchBar: UISearchBar = {
 
         let searchBar = UISearchBar()
@@ -195,6 +240,18 @@ class MainViewController: UIViewController, UISearchBarDelegate {
         searchBar.translatesAutoresizingMaskIntoConstraints = false
 
         return searchBar
+
+    }()
+
+    let bottomView: UIView = {
+
+        let view = UIView()
+
+        view.backgroundColor = .black
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+
+        return view
 
     }()
 
@@ -234,11 +291,23 @@ class MainViewController: UIViewController, UISearchBarDelegate {
 
         urlsearchBar.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
 
-        urlsearchBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        urlsearchBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 22).isActive = true
 
         urlsearchBar.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
 
         urlsearchBar.heightAnchor.constraint(equalToConstant: 30).isActive = true
+    }
+
+    func setupBottomView() {
+
+        bottomView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+
+        bottomView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+
+        bottomView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+
+        bottomView.heightAnchor.constraint(equalToConstant: 44).isActive = true
+
     }
 
     func setupPlayButton() {
