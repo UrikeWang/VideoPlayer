@@ -19,12 +19,12 @@ class MainViewController: UIViewController {
     var compositionAudioTrack: AVMutableCompositionTrack?
 
     fileprivate var myContext = 0
-    
+
     var playerItem: AVPlayerItem?
-    var player : AVPlayer?
-    var playerController : AVPlayerViewController?
+    var player: AVPlayer?
+    var playerController: AVPlayerViewController?
     var rateSet = false
-    var timer : Timer? = Timer()
+    var timer: Timer? = Timer()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,11 +39,11 @@ class MainViewController: UIViewController {
             options: .new,
             context: nil
         )
-        
+
         playButton.addTarget(self, action: #selector(playVideo), for: .touchUpInside)
-        
+
         muteButton.addTarget(self, action: #selector(playVideo), for: .touchUpInside)
-        
+
         view.addSubview(urlsearchBar)
 
         view.addSubview(playButton)
@@ -72,89 +72,104 @@ class MainViewController: UIViewController {
 
             }
         } else {
-            
+
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-            
+
         }
     }
-    
+
     func playVideo() {
-        
+
         self.removeObserver()
-        
+
         guard
             let videoURL = URL(string: urlsearchBar.text!)
             else { return }
-        
+
         self.playerItem = AVPlayerItem(url: videoURL)
-        
+
         self.player = AVPlayer(playerItem: self.playerItem)
-        
+
         self.player?.actionAtItemEnd = AVPlayerActionAtItemEnd.none
-        
+
         self.addObserver()
-        
+
         self.playerController = AVPlayerViewController()
-        
+
         self.playerController?.player = self.player
+
+        self.playerController?.view.frame = CGRect(x: 0, y: 80, width: view.frame.width, height: 100.0)
         
-        self.playerController?.view.frame = self.view.frame
-        
+//        self.playerController?.preferredContentSize = CGRect(x: 0, y: 80, width: view.frame.width, height: 100.0)
+
         self.present(self.playerController!, animated: true, completion: nil)
-        
-        self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(MainViewController.itemStatus), userInfo: nil, repeats: true)
-        
-    
+
+        self.timer = Timer.scheduledTimer(
+            timeInterval: 1.0,
+            target: self,
+            selector: #selector(MainViewController.itemStatus),
+            userInfo: nil,
+            repeats: true
+        )
+
     }
-    
+
     func addObserver() {
-    
+
         if let player = self.player {
-        
-            player.addObserver(self, forKeyPath: "rate", options: .new, context: &myContext)
-            
-            player.addObserver(self, forKeyPath: "status", options: .new, context: &myContext)
-            
-            
-            
+
+            player.addObserver(
+                self,
+                forKeyPath: "rate",
+                options: .new,
+                context: &myContext
+            )
+
+            player.addObserver(
+                self,
+                forKeyPath: "status",
+                options: .new,
+                context: &myContext
+            )
+
         }
-        
+
     }
-    
+
     func removeObserver() {
-    
+
         if let player = self.player {
-        
+
             player.removeObserver(self, forKeyPath: "rate")
-            
+
             player.removeObserver(self, forKeyPath: "status")
-            
+
         }
-        
+
     }
-    
+
     func itemStatus() {
-    
+
         var endTime: Double = 0.0
-        
+
         var likelyToKeepUp: Bool?
-        
+
         var butterFull: Bool?
-        
+
         var butterEmpty: Bool?
-        
+
         if let playerItem = self.playerItem {
-        
+
             endTime = CMTimeGetSeconds(playerItem.forwardPlaybackEndTime)
-            
+
             likelyToKeepUp = playerItem.isPlaybackLikelyToKeepUp
-            
+
             butterFull = playerItem.isPlaybackBufferFull
-            
+
             butterEmpty = playerItem.isPlaybackBufferEmpty
-            
+
         }
-        
+
     }
 
     let urlsearchBar: UISearchBar = {
