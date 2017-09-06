@@ -7,22 +7,16 @@
 //
 
 import UIKit
-import CoreMedia
-import MediaPlayer
 import AVKit
+import AVFoundation
 
 class MainViewController: UIViewController, UISearchBarDelegate {
-
-    var composition: AVMutableComposition?
-    var compositionVideoTrack: AVMutableCompositionTrack?
-    var compositionAudioTrack: AVMutableCompositionTrack?
 
     fileprivate var myContext = 0
 
     var playerItem: AVPlayerItem?
     var player: AVPlayer?
     var playerController: AVPlayerViewController?
-    var rateSet = false
     var timer: Timer? = Timer()
 
     override func viewDidLoad() {
@@ -42,13 +36,13 @@ class MainViewController: UIViewController, UISearchBarDelegate {
         muteButton.addTarget(self, action: #selector(muteVideo), for: .touchUpInside)
 
         view.addSubview(urlsearchBar)
-        
+
         view.addSubview(bottomView)
 
         bottomView.addSubview(playButton)
 
         bottomView.addSubview(muteButton)
-     
+
         setupUrlSearchBar()
 
         setupPlayButton()
@@ -86,48 +80,37 @@ class MainViewController: UIViewController, UISearchBarDelegate {
 
     func muteVideo() {
 
-        self.player?.isMuted = true
+        if muteButton.titleLabel?.text == "Mute" {
+
+            player?.isMuted = true
+
+            muteButton.setTitle("Unmute", for: .normal)
+
+        } else {
+
+            player?.isMuted = false
+
+            muteButton.setTitle("Mute", for: .normal)
+
+        }
 
     }
 
     func playVideo() {
 
-        self.removeObserver()
+        if playButton.titleLabel?.text == "Pause" {
 
-        guard
-            let videoURL = URL(string: urlsearchBar.text!)
-            else { return }
+            player?.pause()
 
-        self.playerItem = AVPlayerItem(url: videoURL)
+            playButton.setTitle("Play", for: .normal)
 
-        self.player = AVPlayer(playerItem: self.playerItem)
+        } else {
 
-        self.player?.actionAtItemEnd = AVPlayerActionAtItemEnd.none
+            player?.play()
 
-        self.addObserver()
+            playButton.setTitle("Pause", for: .normal)
 
-        self.playerController = AVPlayerViewController()
-
-        self.playerController?.player = self.player
-
-        self.playerController?.view.frame = CGRect(x: 0, y: 80, width: view.frame.width, height: view.frame.height * 0.7)
-
-        self.playerController?.view.backgroundColor = .clear
-
-        self.addChildViewController(playerController!)
-
-        self.view.addSubview((playerController?.view)!)
-
-        playerController?.didMove(toParentViewController: self)
-
-        self.timer = Timer.scheduledTimer(
-            timeInterval: 1.0,
-            target: self,
-            selector: #selector(MainViewController.itemStatus),
-            userInfo: nil,
-            repeats: true
-        )
-
+        }
     }
 
     func addObserver() {
@@ -185,6 +168,62 @@ class MainViewController: UIViewController, UISearchBarDelegate {
             butterEmpty = playerItem.isPlaybackBufferEmpty
 
         }
+
+    }
+
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+
+        setAVPlayerController()
+
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+
+        setAVPlayerController()
+
+    }
+
+    func setAVPlayerController() {
+
+        self.removeObserver()
+
+        guard
+            let videoURL = URL(string: urlsearchBar.text!)
+            else { return }
+
+        self.playerItem = AVPlayerItem(url: videoURL)
+
+        self.player = AVPlayer(playerItem: self.playerItem)
+
+        self.player?.actionAtItemEnd = AVPlayerActionAtItemEnd.none
+
+        self.addObserver()
+
+        self.playerController = AVPlayerViewController()
+
+        self.playerController?.player = self.player
+
+        self.playerController?.view.frame = CGRect(x: 0, y: 80, width: view.frame.width, height: view.frame.height * 0.7)
+
+        self.playerController?.view.backgroundColor = .clear
+
+        self.addChildViewController(playerController!)
+
+        self.view.addSubview((playerController?.view)!)
+
+        playerController?.didMove(toParentViewController: self)
+
+        self.timer = Timer.scheduledTimer(
+            timeInterval: 1.0,
+            target: self,
+            selector: #selector(MainViewController.itemStatus),
+            userInfo: nil,
+            repeats: true
+        )
+
+        self.player?.play()
+
+        playButton.setTitle("Pause", for: .normal)
 
     }
 
